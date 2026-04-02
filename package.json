@@ -12,9 +12,6 @@
     "SCM Providers",
     "Other"
   ],
-  "sponsor": {
-    "url": "https://github.com/sponsors/drixev"
-  },
   "activationEvents": [
     "onStartupFinished"
   ],
