@@ -1,0 +1,30 @@
+# ─── Build output ────────────────────────────────────────────────
+dist/
+
+# ─── Dependencies ────────────────────────────────────────────────
+node_modules/
+
+# ─── Packaged extension ──────────────────────────────────────────
+*.vsix
+
+# ─── TypeScript cache ────────────────────────────────────────────
+*.tsbuildinfo
+
+# ─── ESLint cache ────────────────────────────────────────────────
+.eslintcache
+
+# ─── VS Code local settings (keep .vscode/extensions.json & launch.json if desired) ──
+.vscode/settings.json
+.vscode/tasks.json
+
+# ─── OS artifacts ────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Logs ────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+
+# claude
+.claude/
+.vscode/

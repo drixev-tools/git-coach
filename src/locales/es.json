@@ -1,0 +1,93 @@
+{
+    "messages": {
+        "learnMore": "Saber más",
+        "initializeRepository": "Inicializar repositorio Git",
+        "cannotExecuteWorkflow": "No se puede ejecutar el flujo de trabajo: {{errorMessage}}",
+        "noGitInstalled": "Git no está instalado o no se encontró en el PATH.",
+        "noGitRepository": "No se encontró un repositorio Git en el espacio de trabajo.",
+        "noWorkSpaceOpen": "No hay ninguna carpeta de espacio de trabajo abierta",
+        "copied": "Copiado",
+        "clearAllhistory": "¿Borrar todo el historial de comandos?",
+        "clearedHistory": "Historial de comandos borrado",
+        "clear": "Borrar",
+        "cancel": "Cancelar",
+        "command": "Comando",
+        "description": "Descripción",
+        "error": "Error",
+        "copyCommand": "Copiar comando",
+        "openDocumentation": "Abrir documentación",
+        "close": "Cerrar"
+    },
+    "gitWorkflow": {
+        "showWorkflows": {
+            "feature": {
+                "label": "Rama de funcionalidad",
+                "description": "Iniciar una nueva rama de funcionalidad"
+            },
+            "commit": {
+                "label": "Confirmar",
+                "description": "Confirmar tus cambios"
+            },
+            "commitPush": {
+                "label": "Confirmar y enviar",
+                "description": "Guardar, confirmar y enviar cambios"
+            },
+            "pullRebase": {
+                "label": "Pull con rebase",
+                "description": "Obtener cambios con rebase"
+            },
+            "merge": {
+                "label": "Fusionar rama",
+                "description": "Fusionar otra rama"
+            },
+            "stashOnly": {
+                "label": "Solo guardar en stash",
+                "description": "Guardar cambios en stash únicamente"
+            },
+            "stash": {
+                "label": "Stash y cambiar",
+                "description": "Guardar cambios en stash y cambiar de rama"
+            },
+            "hotfix": {
+                "label": "Corrección urgente",
+                "description": "Crear una rama de corrección urgente"
+            },
+            "release": {
+                "label": "Lanzamiento",
+                "description": "Preparar un lanzamiento"
+            },
+            "undo": {
+                "label": "Deshacer confirmación",
+                "description": "Deshacer la última confirmación"
+            },
+            "cherryPick": {
+                "label": "Cherry-Pick",
+                "description": "Aplicar una confirmación específica"
+            },
+            "revert": {
+                "label": "Revertir confirmación",
+                "description": "Revertir una confirmación específica"
+            },
+            "interactiveRebase": {
+                "label": "Rebase interactivo",
+                "description": "Rebase con edición de confirmaciones"
+            },
+            "createSwitchBranch": {
+                "label": "Crear y cambiar de rama",
+                "description": "Crear y cambiar a una nueva rama"
+            },
+            "switchBranch": {
+                "label": "Cambiar de rama",
+                "description": "Cambiar a otra rama sin guardar en stash"
+            },
+            "syncFromBranch": {
+                "label": "Sincronizar desde rama",
+                "description": "Obtener los últimos cambios de otra rama a la actual"
+            },
+            "placeholder": "Selecciona un flujo de trabajo de Git"
+        }
+    },
+    "showTipDetails": {
+        "documentation": "Documentación"
+    }
+}

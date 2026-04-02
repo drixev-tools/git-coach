@@ -1,0 +1,93 @@
+{
+    "messages": {
+        "learnMore": "Learn more",
+        "initializeRepository": "Initialize Git Repository",
+        "cannotExecuteWorkflow": "Cannot execute workflow: {{errorMessage}}",
+        "noGitInstalled": "Git is not installed or not found in PATH.",
+        "noGitRepository": "No Git repository found in the workspace.",
+        "noWorkSpaceOpen":"No workspace folder open",
+        "copied":"Copied",
+        "clearAllhistory": "Clear all command history?",
+        "clearedHistory": "Command history cleared",
+        "clear":"Clear",
+        "cancel":"Cancel",
+        "command":"Command",
+        "description":"Description",
+        "error":"Error",
+        "copyCommand":"Copy Command",
+        "openDocumentation":"Open Documentation",
+        "close":"Close"
+    },
+    "gitWorkflow": {
+        "showWorkflows": {
+            "feature": {
+                "label": "Feature Branch",
+                "description": "Start a new feature branch"
+            },
+            "commit": {
+                "label": "Commit",
+                "description": "Commit your changes"
+            },
+            "commitPush": {
+                "label": "Commit and Push",
+                "description": "Stash, commit, and push changes"
+            },
+            "pullRebase": {
+                "label": "Pull rebase",
+                "description": "Pull with rebase"
+            },
+            "merge": {
+                "label": "Merge Branch",
+                "description": "Merge another branch"
+            },
+            "stashOnly": {
+                "label": "Stash Only",
+                "description": "Only stash changes"
+            },
+            "stash": {
+                "label": "Stash & Switch",
+                "description": "Stash changes and switch branch"
+            },
+            "hotfix": {
+                "label": "Hotfix",
+                "description": "Create a hotfix branch"
+            },
+            "release": {
+                "label": "Release",
+                "description": "Prepare a release"
+            },
+            "undo": {
+                "label": "Undo Commit",
+                "description": "Undo last commit"
+            },
+            "cherryPick": {
+                "label": "Cherry-Pick",
+                "description": "Apply a specific commit"
+            },
+            "revert": {
+                "label": "Revert Commit",
+                "description": "Revert a specific commit"
+            },
+            "interactiveRebase": {
+                "label": "Interactive Rebase",
+                "description": "Rebase with commit editing"
+            },
+            "createSwitchBranch": {
+                "label": "Create & Switch Branch",
+                "description": "Create and switch to new branch"
+            },
+            "switchBranch": {
+                "label": "Change branch",
+                "description": "Switch to another branch without stashing"
+            },
+            "syncFromBranch": {
+                "label": "Sync From Branch",
+                "description": "Get latest changes from another branch into current"
+            },
+            "placeholder": "Select a Git workflow"
+        }
+    },
+    "showTipDetails": {
+        "documentation": "Documentation"
+    }
+}

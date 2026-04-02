@@ -1,0 +1,217 @@
+{
+  "name": "git-workflow-assistant",
+  "displayName": "Git Workflow Assistant",
+  "description": "Transparent Git workflows with visible command suggestions",
+  "version": "1.0.0",
+  "publisher": "drixev",
+  "icon": "images/icon.png",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "SCM Providers",
+    "Other"
+  ],
+  "sponsor": {
+    "url": "https://github.com/sponsors/drixev"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "gitWorkflow.showWorkflows",
+        "title": "%contributes.commands.showWorkflows.title%"
+      },
+      {
+        "command": "gitWorkflow.featureBranch",
+        "title": "%contributes.commands.featureBranch.title%"
+      },
+      {
+        "command": "gitWorkflow.hotfix",
+        "title": "%contributes.commands.hotfix.title%"
+      },
+      {
+        "command": "gitWorkflow.release",
+        "title": "%contributes.commands.release.title%"
+      },
+      {
+        "command": "gitWorkflow.commit",
+        "title": "%contributes.commands.commit.title%"
+      },
+      {
+        "command": "gitWorkflow.commitAndPush",
+        "title": "%contributes.commands.commitAndPush.title%"
+      },
+      {
+        "command": "gitWorkflow.pullRebase",
+        "title": "%contributes.commands.pullRebase.title%"
+      },
+      {
+        "command": "gitWorkflow.stashOnly",
+        "title": "%contributes.commands.stashOnly.title%"
+      },
+      {
+        "command": "gitWorkflow.stashAndSwitch",
+        "title": "%contributes.commands.stashAndSwitch.title%"
+      },
+      {
+        "command": "gitWorkflow.mergeBranch",
+        "title": "%contributes.commands.mergeBranch.title%"
+      },
+      {
+        "command": "gitWorkflow.undoCommit",
+        "title": "%contributes.commands.undoCommit.title%"
+      },
+      {
+        "command": "gitWorkflow.showHistory",
+        "title": "%contributes.commands.showHistory.title%"
+      },
+      {
+        "command": "gitWorkflow.cherryPick",
+        "title": "%contributes.commands.cherryPick.title%"
+      },
+      {
+        "command": "gitWorkflow.revert",
+        "title": "%contributes.commands.revert.title%"
+      },
+      {
+        "command": "gitWorkflow.interactiveRebase",
+        "title": "%contributes.commands.interactiveRebase.title%"
+      },
+      {
+        "command": "gitWorkflow.createSwitchBranch",
+        "title": "%contributes.commends.createSwitchBranch.title%"
+      },
+      {
+        "command": "gitWorkflow.switchBranch",
+        "title": "%contributes.commands.switchBranch.title%"
+      },
+      {
+        "command": "gitWorkflow.showTips",
+        "title": "%contributes.commands.showTips.title%"
+      },
+      {
+        "command": "gitWorkflow.showDocumentation",
+        "title": "%contributes.commands.showDocumentation.title%"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "git-workflow-assistant",
+          "title": "Git Workflows",
+          "icon": "images/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "git-workflow-assistant": [
+        {
+          "id": "gitWorkflowExplorer",
+          "name": "%views.gitWorkflowExplorer%",
+          "icon": ""
+        },
+        {
+          "id": "gitCommandHistory",
+          "name": "%views.gitCommandHistory%",
+          "icon": ""
+        },
+        {
+          "id": "gitTipsExplorer",
+          "name": "%views.gitTipsExplorer%",
+          "icon": ""
+        }
+      ]
+    },
+    "configuration": {
+      "title": "%configuration.title%",
+      "properties": {
+        "gitWorkflow.autoShowCommands": {
+          "type": "boolean",
+          "default": true,
+          "description": "%configuration.autoShowCommands%"
+        },
+        "gitWorkflow.confirmBeforeExecute": {
+          "type": "boolean",
+          "default": true,
+          "description": "%configuration.confirmBeforeExecute%"
+        },
+        "gitWorkflow.saveCommandHistory": {
+          "type": "boolean",
+          "default": true,
+          "description": "%configuration.saveCommandHistory%"
+        },
+        "gitWorkflow.showTips": {
+          "type": "boolean",
+          "default": true,
+          "description": "%configuration.showTips%"
+        },
+        "gitWorkflow.validateInputs": {
+          "type": "boolean",
+          "default": true,
+          "description": "%configuration.validateInputs%"
+        },
+        "gitWorkflow.warnDestructiveOperations": {
+          "type": "boolean",
+          "default": true,
+          "description": "%configuration.warnDestructiveOperations%"
+        },
+        "gitWorkflow.gitDocumentationBaseUrl": {
+          "type": "string",
+          "default": "https://git-scm.com/docs",
+          "description": "%configuration.gitDocumentationBaseUrl%"
+        }
+      }
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "gitWorkflow.showWorkflows",
+          "when": "view == gitWorkflowExplorer",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "gitWorkflow.showDocumentation",
+          "when": "view == gitWorkflowExplorer && viewItem == workflowItem",
+          "group": "inline"
+        },
+        {
+          "command": "gitWorkflow.explainCommand",
+          "when": "view == gitCommandHistory && viewItem == historyItem",
+          "group": "inline"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "gitWorkflow.showWorkflows"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package --allow-missing-repository",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "@types/vscode": "^1.80.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "i18next": "^23.16.8"
+  }
+}
