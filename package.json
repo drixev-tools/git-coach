@@ -6,7 +6,7 @@
   "publisher": "drixev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/drixev/git-workflow-vs-extension"
+    "url": "https://github.com/drixev-tools/git-workflow-vs-extension"
   },
   "icon": "images/icon.png",
   "engines": {
