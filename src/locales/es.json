@@ -1,6 +1,6 @@
 {
     "app": {
-        "name": "Git Workflow Assistant"
+        "name": "Git Coach"
     },
     "messages": {
         "initializeRepository": "Inicializar repositorio Git",

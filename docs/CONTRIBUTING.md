@@ -13,7 +13,7 @@ Contributions are welcome! Here are ways to contribute:
 ```json
 {
   "command": "gitWorkflow.myWorkflow",
-  "title": "Git Workflow: My Workflow"
+  "title": "glc: My Workflow"
 }
 ```
 

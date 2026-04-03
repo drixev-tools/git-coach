@@ -1,6 +1,6 @@
 # Workflow Examples & Use Cases
 
-This document provides real-world examples of when and how to use each workflow in the Git Workflow Assistant.
+This document provides real-world examples of when and how to use each workflow in the Git Coach assistant.
 
 ## Workflow Details
 

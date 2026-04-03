@@ -1,6 +1,6 @@
 # Installation & Development Guide
 
-Complete guide for installing the Git Workflow Assistant extension.
+Complete guide for installing the Git Coach assistant extension.
 
 ## Table of Contents
 1. [Prerequisites](#prerequisites)
@@ -92,7 +92,7 @@ vsce package
 ### Method 3: Install from VS Code Marketplace (Future)
 Once published:
 1. Open Extensions (Ctrl+Shift+X)
-2. Search "Git Workflow Assistant"
+2. Search "Git Coach"
 3. Click Install
 
 ---

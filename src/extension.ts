@@ -54,7 +54,7 @@ export async function activate(context: vscode.ExtensionContext) {
   } catch (error: any) {
     vscode.window
       .showWarningMessage(
-        `Git Workflow Assistant: ${error.message}`,
+        `Git Coach: ${error.message}`,
         "Learn more",
       )
       .then((selection) => {

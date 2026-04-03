@@ -1,4 +1,4 @@
-# Testing Guide for Git Workflow Assistant
+# Testing Guide for Git Coach assistant
 
 This guide covers how to test the extension during development.
 
@@ -25,7 +25,7 @@ This guide covers how to test the extension during development.
 - [ x] Icons display correctly
 
 #### 3. Command Palette
-- [ x] All commands appear when typing "Git Workflow"
+- [ x] All commands appear when typing "glc"
 - [ x] Commands are executable
 - [ x] Command titles are clear
 
@@ -186,7 +186,7 @@ For each workflow, test:
 
 3. **Output Channel**:
    - View → Output
-   - Select "Git Workflow Assistant"
+   - Select "Git Coach Assistant"
    - See all command execution logs
 
 **Happy Testing!**

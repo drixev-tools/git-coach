@@ -1,6 +1,6 @@
 {
-  "name": "git-workflow-assistant",
-  "displayName": "%appName%",
+  "name": "git-coach",
+  "displayName": "%displayName%",
   "description": "Transparent Git workflows with visible command suggestions",
   "version": "1.0.0",
   "publisher": "drixev",
@@ -127,7 +127,7 @@
       "activitybar": [
         {
           "id": "git-workflow-assistant",
-          "title": "%appName%",
+          "title": "%displayName%",
           "icon": "images/icon.svg"
         }
       ]
@@ -152,7 +152,7 @@
       ]
     },
     "configuration": {
-      "title": "%appName%",
+      "title": "%displayName%",
       "properties": {
         "gitWorkflow.autoShowCommands": {
           "type": "boolean",

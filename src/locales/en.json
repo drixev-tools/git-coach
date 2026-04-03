@@ -1,24 +1,24 @@
 {
-    "app":{
-        "name": "Git Workflow Assistant"
+    "app": {
+        "name": "Git Coach"
     },
     "messages": {
         "initializeRepository": "Initialize Git Repository",
         "cannotExecuteWorkflow": "Cannot execute workflow: {{errorMessage}}",
         "noGitInstalled": "Git is not installed or not found in PATH.",
         "noGitRepository": "No Git repository found in the workspace.",
-        "noWorkSpaceOpen":"No workspace folder open",
-        "copied":"Copied",
+        "noWorkSpaceOpen": "No workspace folder open",
+        "copied": "Copied",
         "clearAllhistory": "Clear all command history?",
         "clearedHistory": "Command history cleared",
-        "clear":"Clear",
-        "cancel":"Cancel",
-        "command":"Command",
-        "description":"Description",
-        "error":"Error",
-        "copyCommand":"Copy Command",
-        "openDocumentation":"Open Documentation",
-        "close":"Close"
+        "clear": "Clear",
+        "cancel": "Cancel",
+        "command": "Command",
+        "description": "Description",
+        "error": "Error",
+        "copyCommand": "Copy Command",
+        "openDocumentation": "Open Documentation",
+        "close": "Close"
     },
     "gitWorkflow": {
         "showWorkflows": {
@@ -90,7 +90,7 @@
         }
     },
     "showTipDetails": {
-        "tipsDisabled":"Tips are currently disabled. Enable them in settings to view details.",
+        "tipsDisabled": "Tips are currently disabled. Enable them in settings to view details.",
         "documentation": "Documentation"
     }
 }

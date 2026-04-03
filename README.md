@@ -1,4 +1,4 @@
-# Git Workflow Assistant for VS Code
+# Git Coach for VS Code
 
 Hi dude! What is this?
 
@@ -46,12 +46,12 @@ A powerful VS Code extension that makes Git workflows transparent and efficient 
 ### Accessing Workflows
 
 #### Method 1: Sidebar
-1. Click the Git Workflows icon in the Activity Bar
+1. Click the Git Coach icon in the Activity Bar
 2. Click on any workflow to execute it
 
 #### Method 2: Command Palette
 1. Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac)
-2. Type "Git Workflows" or "GWA: {command}"
+2. Type "Git Coach" or "glc: {command}"
 3. Select your desired workflow
 
 ### Example: Feature Branch Workflow

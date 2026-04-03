@@ -20,9 +20,7 @@ export class GitCommandExecutor {
 
   constructor(context: vscode.ExtensionContext) {
     this.context = context;
-    this.outputChannel = vscode.window.createOutputChannel(
-      i18next.t("app.name"),
-    );
+    this.outputChannel = vscode.window.createOutputChannel("Git Coach");
     this.commandHistory = context.globalState.get("commandHistory", []);
   }
 
