@@ -2,9 +2,11 @@ import * as vscode from 'vscode';
 import { GitTip, TipItem } from '../items/tip.item';
 import { CategoryItem } from '../items/category.item';
 
-export class GitTipsProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
-    private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null | void> = new vscode.EventEmitter<vscode.TreeItem | undefined | null | void>();
-    readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null | void> = this._onDidChangeTreeData.event;
+type TipsTreeNode = CategoryItem<GitTip> | TipItem;
+
+export class GitTipsProvider implements vscode.TreeDataProvider<TipsTreeNode> {
+    private _onDidChangeTreeData: vscode.EventEmitter<TipsTreeNode | undefined | null | void> = new vscode.EventEmitter<TipsTreeNode | undefined | null | void>();
+    readonly onDidChangeTreeData: vscode.Event<TipsTreeNode | undefined | null | void> = this._onDidChangeTreeData.event;
 
     private tips: GitTip[] = [
         {
@@ -190,13 +192,13 @@ export class GitTipsProvider implements vscode.TreeDataProvider<vscode.TreeItem>
         this._onDidChangeTreeData.fire();
     }
 
-    getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
+    getTreeItem(element: TipsTreeNode): vscode.TreeItem {
         return element;
     }
 
-    getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
+    getChildren(element?: TipsTreeNode): Thenable<TipsTreeNode[]> {
         if (element instanceof CategoryItem) {
-            const categoryTips = this.tips.filter(tip => tip.category === element.category);
+            const categoryTips = this.tips.filter(tip => tip.category === element.label);
             return Promise.resolve(categoryTips.map(tip => new TipItem(tip)));
         }
 
@@ -207,7 +209,7 @@ export class GitTipsProvider implements vscode.TreeDataProvider<vscode.TreeItem>
         const categories = Array.from(new Set(this.tips.map(tip => tip.category)));
         const categoryItems = categories.map(category => {
             const categoryTips = this.tips.filter(tip => tip.category === category);
-            return new CategoryItem(category, categoryTips);
+            return new CategoryItem<GitTip>(category, categoryTips);
         });
 
         return Promise.resolve(categoryItems);

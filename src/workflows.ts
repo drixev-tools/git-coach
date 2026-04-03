@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { GitCommandExecutor } from "./gitCommandExecutor";
 import { GitValidator } from "./utils/gitValidator";
+import i18next from "i18next";
 
 async function executeFeatureBranchWorkflow(executor: GitCommandExecutor) {
   const branchName = await vscode.window.showInputBox({
@@ -168,46 +169,6 @@ async function executeReleaseWorkflow(executor: GitCommandExecutor) {
   await executor.executeCommandSequence(commands, "Release Workflow");
 }
 
-async function executeCommitWorkflow(executor: GitCommandExecutor) {
-  const message = await vscode.window.showInputBox({
-    prompt: "Enter commit message",
-    placeHolder: "e.g., feat: add user authentication",
-    validateInput: (value) => {
-      const validation = GitValidator.validateCommitMessage(value || "");
-      if (!validation.isValid) {
-        return validation.errorMessage || "Invalid commit message";
-      }
-      return null;
-    },
-  });
-
-  if (!message) return;
-
-  const messageValidation = GitValidator.validateCommitMessage(message);
-  if (messageValidation.errorMessage) {
-    await vscode.window.showWarningMessage(messageValidation.errorMessage);
-  }
-
-  const commands = [
-    {
-      command: "git add .",
-      description: "Stage all changes",
-      documentationUrl: "https://git-scm.com/docs/git-add",
-      explanation:
-        "Stages all modified and new files in the current directory and subdirectories for commit.",
-    },
-    {
-      command: `git commit -m "${message}"`,
-      description: "Commit with message",
-      documentationUrl: "https://git-scm.com/docs/git-commit",
-      explanation:
-        "Creates a new commit with the staged changes and the provided message.",
-    },
-  ];
-
-  await executor.executeCommandSequence(commands, "Commit Workflow");
-}
-
 async function executeCommitPushWorkflow(executor: GitCommandExecutor) {
   const message = await vscode.window.showInputBox({
     prompt: "Enter commit message",
@@ -230,6 +191,10 @@ async function executeCommitPushWorkflow(executor: GitCommandExecutor) {
 
   const branch = await executor.getCurrentBranch();
 
+  const pushMessage = await vscode.window.showQuickPick(["Yes", "No"], {
+    placeHolder: `Do you want to push to remote branch '${branch}' after committing?`,
+  });
+
   const commands = [
     {
       command: "git add .",
@@ -245,14 +210,17 @@ async function executeCommitPushWorkflow(executor: GitCommandExecutor) {
       explanation:
         "Creates a new commit with the staged changes and the provided message.",
     },
-    {
+  ];
+
+  if (pushMessage === "Yes") {
+    commands.push({
       command: `git push origin ${branch}`,
       description: `Push to remote branch '${branch}'`,
       documentationUrl: "https://git-scm.com/docs/git-push",
       explanation:
         "Uploads local commits to the remote repository, updating the remote branch.",
-    },
-  ];
+    });
+  }
 
   await executor.executeCommandSequence(commands, "Commit & Push Workflow");
 }
@@ -280,23 +248,39 @@ async function executePullRebaseWorkflow(executor: GitCommandExecutor) {
   await executor.executeCommandSequence(commands, "Pull Rebase Workflow");
 }
 
-async function executeStashOnlyWorkflow(executor: GitCommandExecutor) {
+async function executeStashWorkflow(executor: GitCommandExecutor) {
+  const untrackedMessage = await vscode.window.showQuickPick(["Yes", "No"], {
+    placeHolder: "Include untracked files in stash?",
+  });
+
+  const switchBranchMessage = await vscode.window.showQuickPick(["Yes", "No"], {
+    placeHolder: "Do you want to switch to any branch?",
+  });
+
+  let targetBranch = undefined;
+
+  if (switchBranchMessage === "Yes") {
+    const branches = await executor.getBranches();
+
+    targetBranch = await vscode.window.showQuickPick(branches, {
+      placeHolder: "Select branch to switch to",
+    });
+
+    if (!targetBranch) return;
+  }
+
   const stashMessage = await vscode.window.showInputBox({
     prompt: "Enter stash message (optional)",
     placeHolder: "e.g., WIP: working on feature X",
   });
 
-  if (!stashMessage) return;
-
-  const untrackedMessage = await vscode.window.showQuickPick(["Yes", "No"], {
-    placeHolder: "Include untracked files in stash?",
-  });
+  const stashUntrackerdFilesFlag = untrackedMessage === "Yes" ? "-u" : "";
 
   const commands = [
     {
       command: stashMessage
-        ? `git stash save ${untrackedMessage == "Yes" ? "-u" : ""} "${stashMessage}"`
-        : `git stash ${untrackedMessage == "Yes" ? "-u" : ""}`,
+        ? `git stash push ${stashUntrackerdFilesFlag} -m "${stashMessage}"`
+        : `git stash ${stashUntrackerdFilesFlag}`,
       description: "Stash current changes",
       documentationUrl: "https://git-scm.com/docs/git-stash",
       explanation:
@@ -304,52 +288,28 @@ async function executeStashOnlyWorkflow(executor: GitCommandExecutor) {
     },
   ];
 
-  await executor.executeCommandSequence(commands, "Stash Workflow");
-}
-
-async function executeStashWorkflow(executor: GitCommandExecutor) {
-  const branches = await executor.getBranches();
-
-  const targetBranch = await vscode.window.showQuickPick(branches, {
-    placeHolder: "Select branch to switch to",
-  });
-
-  if (!targetBranch) return;
-
-  const stashMessage = await vscode.window.showInputBox({
-    prompt: "Enter stash message (optional)",
-    placeHolder: "e.g., WIP: working on feature X",
-  });
-
-  const commands = [
-    {
-      command: stashMessage ? `git stash save "${stashMessage}"` : "git stash",
-      description: "Stash current changes",
-      documentationUrl: "https://git-scm.com/docs/git-stash",
-      explanation:
-        "Temporarily saves uncommitted changes so you can switch branches cleanly.",
-    },
-    {
+  if (targetBranch) {
+    commands.push({
       command: `git checkout ${targetBranch}`,
       description: `Switch to branch '${targetBranch}'`,
       documentationUrl: "https://git-scm.com/docs/git-checkout",
       explanation:
         "Switches to the specified branch, updating your working directory.",
-    },
-  ];
-
-  const applyStash = await vscode.window.showQuickPick(["Yes", "No"], {
-    placeHolder: "Apply stash on new branch?",
-  });
-
-  if (applyStash === "Yes") {
-    commands.push({
-      command: "git stash pop",
-      description: "Apply and remove stash",
-      documentationUrl: "https://git-scm.com/docs/git-stash",
-      explanation:
-        "Applies the most recent stash and removes it from the stash list.",
     });
+
+    const applyStash = await vscode.window.showQuickPick(["Yes", "No"], {
+      placeHolder: "Apply stash on new branch?",
+    });
+
+    if (applyStash === "Yes") {
+      commands.push({
+        command: "git stash pop",
+        description: "Apply and remove stash",
+        documentationUrl: "https://git-scm.com/docs/git-stash",
+        explanation:
+          "Applies the most recent stash and removes it from the stash list.",
+      });
+    }
   }
 
   await executor.executeCommandSequence(commands, "Stash & Switch Workflow");
@@ -624,25 +584,23 @@ async function executeInteractiveRebaseWorkflow(executor: GitCommandExecutor) {
     base = selectedBranch;
   }
 
-  const commands = [
-    {
-      command: `git rebase -i ${base}`,
-      description: `Interactive rebase starting from ${base}`,
-      documentationUrl: "https://git-scm.com/docs/git-rebase",
-      explanation:
-        "Interactive rebase opens an editor where you can reorder, edit, squash, or drop commits. The editor will open automatically.",
-    },
-  ];
+  const command = {
+    command: `git rebase -i ${base}`,
+    description: `Interactive rebase starting from ${base}`,
+    documentationUrl: "https://git-scm.com/docs/git-rebase",
+    explanation:
+      "Interactive rebase will open your default editor. After making changes, save and close the editor to continue.",
+  };
 
-  await vscode.window.showInformationMessage(
-    "Interactive rebase will open your default editor. After making changes, save and close the editor to continue.",
+  const proceed = await vscode.window.showInformationMessage(
+    command.explanation,
     "Continue",
+    "Cancel",
   );
 
-  await executor.executeCommandSequence(
-    commands,
-    "Interactive Rebase Workflow",
-  );
+  if (proceed !== "Continue") return;
+
+  await executor.executeCommandSequence([command], "Interactive Rebase Workflow", "interactiveRebase");
 }
 
 async function executeCreateSwitchBranchWorkflow(executor: GitCommandExecutor) {
@@ -772,21 +730,368 @@ async function executeSwitchBranchWorkflow(executor: GitCommandExecutor) {
   await executor.executeCommandSequence(commands, "Switch Branch Workflow");
 }
 
-export {
-    executeFeatureBranchWorkflow,
-    executeHotfixWorkflow,
-    executeReleaseWorkflow,
-    executeCommitWorkflow,
-    executeCommitPushWorkflow,
-    executePullRebaseWorkflow,
-    executeStashOnlyWorkflow,
-    executeStashWorkflow,
-    executeMergeWorkflow,
-    executeUndoWorkflow,
-    executeCherryPickWorkflow,
-    executeRevertWorkflow,
-    executeInteractiveRebaseWorkflow,
-    executeCreateSwitchBranchWorkflow,
-    executeSyncFromBranchWorkflow,
-    executeSwitchBranchWorkflow
+async function executeInitializeRepositoryWorkflow(
+  executor: GitCommandExecutor,
+) {
+  const folderUri = await vscode.window.showOpenDialog({
+    canSelectFolders: true,
+    canSelectFiles: false,
+    canSelectMany: false,
+    openLabel: "Select folder to initialize Git repository in",
+  });
+
+  if (!folderUri || folderUri.length === 0) {
+    vscode.window.showErrorMessage("No folder selected");
+    return;
+  }
+
+  if (!folderUri[0]?.fsPath) {
+    vscode.window.showErrorMessage("Invalid folder selected");
+    return;
+  }
+
+  const commands = [
+    {
+      command: `git init "${folderUri[0].fsPath}"`,
+      description: "Initialize new Git repository",
+      documentationUrl: "https://git-scm.com/docs/git-init",
+      explanation:
+        "Creates a new Git repository in the selected folder. This is the first step to start version controlling your project with Git.",
+    },
+  ];
+
+  await executor.executeCommandSequence(
+    commands,
+    "Initialize Repository Workflow",
+  );
 }
+
+async function executeCloneRepositoryWorkflow(executor: GitCommandExecutor) {
+  const repoUrl = await vscode.window.showInputBox({
+    prompt: "Enter the url of the remote repository",
+    placeHolder: "e.g., https://github.com/[user]/repo.git",
+    validateInput: (value) => {
+      if (!value || value.trim().length === 0) {
+        return "Remote url is required";
+      }
+    },
+  });
+
+  if (!repoUrl) {
+    vscode.window.showErrorMessage("Repository URL is required");
+    return;
+  }
+
+  const folderUri = await vscode.window.showOpenDialog({
+    canSelectFolders: true,
+    canSelectFiles: false,
+    canSelectMany: false,
+    openLabel: "Select folder to clone repository into",
+  });
+
+  if (!folderUri || folderUri.length === 0) {
+    vscode.window.showErrorMessage("No folder selected");
+    return;
+  }
+
+  if (!folderUri[0]?.fsPath) {
+    vscode.window.showErrorMessage("Invalid folder selected");
+    return;
+  }
+
+  const commands = [
+    {
+      command: `git clone "${repoUrl}" "${folderUri[0].fsPath}"`,
+      description: "Clone Git repository",
+      documentationUrl: "https://git-scm.com/docs/git-clone",
+      explanation:
+        "Clones an existing Git repository from the provided URL into the selected folder. This is the first step to start working on an existing project with Git.",
+    },
+  ];
+
+  await executor.executeCommandSequence(commands, "Clone Repository Workflow");
+}
+
+async function executeUpdateRemoteUrlWorkflow(executor: GitCommandExecutor) {
+  const currentRemote = await executor.getCurrentRemote();
+
+  let remoteName: string = "origin";
+
+  if (!currentRemote) {
+    vscode.window.showErrorMessage(
+      "No remote repository found. Please add a remote before updating the URL.",
+    );
+
+    const remoteNameInput = await vscode.window.showInputBox({
+      prompt: "Enter remote name to add",
+      placeHolder: "e.g., origin",
+      validateInput: (value) => {
+        if (!value || value.trim().length === 0) {
+          return "Remote name is required";
+        }
+        return null;
+      },
+    });
+
+    if (!remoteNameInput) return;
+    remoteName = remoteNameInput;
+  }
+
+  const remoteUrl = await vscode.window.showInputBox({
+    prompt: "Enter the url of the remote repository",
+    placeHolder: "e.g., https://github.com/[user]/repo.git",
+    validateInput: (value) => {
+      if (!value || value.trim().length === 0) {
+        return "Remote url is required";
+      }
+    },
+  });
+
+  if (!remoteUrl) return;
+
+  const commands = [];
+
+  if (!currentRemote) {
+    commands.push({
+      command: `git remote add ${remoteName} "${remoteUrl}"`,
+      description: `Add new remote '${remoteName}' with URL`,
+      documentationUrl: "https://git-scm.com/docs/git-remote",
+      explanation: `Adds a new remote repository with the specified name and URL. This is useful for connecting your local repository to a remote server for pushing and pulling changes.`,
+    });
+  } else {
+    commands.push({
+      command: `git remote set-url origin "${remoteUrl}"`,
+      description: "Update remote URL",
+      documentationUrl: "https://git-scm.com/docs/git-remote",
+      explanation:
+        "Updates the URL of the 'origin' remote to the new value. This is useful if the remote repository has moved or if you want to switch between HTTPS and SSH URLs.",
+    });
+  }
+
+  await executor.executeCommandSequence(
+    commands,
+    "Add or Update Remote URL Workflow",
+  );
+}
+
+async function executeAmmedLastCommitWorkflow(executor: GitCommandExecutor) {
+  const lastCommit = await executor.getCommits(1);
+
+  if (!lastCommit.length) {
+    vscode.window.showInformationMessage("No commits found to amend");
+    return;
+  }
+
+  const message = await vscode.window.showInputBox({
+    prompt: "Enter new commit message",
+    placeHolder: "e.g., fix: correct typo in README",
+    value: lastCommit[0]?.message || "",
+    validateInput: (value) => {
+      const validation = GitValidator.validateCommitMessage(value || "");
+      if (!validation.isValid) {
+        return validation.errorMessage || "Invalid commit message";
+      }
+      return null;
+    },
+  });
+
+  if (!message) {
+    vscode.window.showInformationMessage(
+      "A message is required to amend the last commit",
+    );
+    return;
+  }
+
+  const messageValidation = GitValidator.validateCommitMessage(message);
+  if (messageValidation.errorMessage) {
+    await vscode.window.showWarningMessage(messageValidation.errorMessage);
+  }
+
+  const commands = [
+    {
+      command: `git commit --amend -m "${message}"`,
+      description: "Amend last commit with new message",
+      documentationUrl: "https://git-scm.com/docs/git-commit",
+      explanation:
+        "Replaces the most recent commit with a new one that has the same changes but a different message. This is useful for correcting typos or improving commit messages before pushing.",
+    },
+  ];
+
+  await executor.executeCommandSequence(commands, "Amend Last Commit Workflow");
+}
+
+async function executeApplyStashWorkflow(executor: GitCommandExecutor) {
+  const stashes = await executor.getStashList();
+
+  if (stashes.length === 0) {
+    vscode.window.showInformationMessage("No stashes found");
+    return;
+  }
+
+  interface StashItem {
+    label: string;
+    description: string;
+    detail: string;
+    hash: string;
+  }
+
+  const mappedStashes: StashItem[] = stashes.map((s) => ({
+    label: s.id,
+    description: s.message,
+    detail: "",
+    hash: s.id,
+  }));
+
+  const selected = await vscode.window.showQuickPick(mappedStashes, {
+    placeHolder: "Select a stash to apply",
+    matchOnDescription: true,
+  });
+
+  if (!selected) return;
+
+  const commands = [
+    {
+      command: `git stash apply ${selected.hash}`,
+      description: `Apply stash ${selected.hash}: ${selected.description}`,
+      documentationUrl: "https://git-scm.com/docs/git-stash",
+      explanation:
+        "Applies the changes from the selected stash to your working directory without removing it from the stash list.",
+    },
+  ];
+
+  await executor.executeCommandSequence(commands, "Apply Stash Workflow");
+}
+
+async function executePopStashWorkflow(executor: GitCommandExecutor) {
+  const stashes = await executor.getStashList();
+
+  const lastStash = stashes[0];
+
+  if (stashes.length === 0 || !lastStash) {
+    vscode.window.showInformationMessage("No stashes found");
+    return;
+  }
+
+  const commands = [
+    {
+      command: `git stash pop ${lastStash.id}`,
+      description: `Pop stash ${lastStash.id}: ${lastStash.message}`,
+      documentationUrl: "https://git-scm.com/docs/git-stash",
+      explanation:
+        "Applies the changes from the selected stash to your working directory and removes it from the stash list.",
+    },
+  ];
+
+  await executor.executeCommandSequence(commands, "Pop Stash Workflow");
+}
+
+async function executeCreateAndPushTagWorkflow(executor: GitCommandExecutor) {
+  const tagName = await vscode.window.showInputBox({
+    prompt: "Enter tag name",
+    placeHolder: "e.g., v1.0.0",
+    validateInput: (value) => {
+      if (!value || value.trim().length === 0) {
+        return "Tag name is required";
+      }
+      const validation = GitValidator.validateVersionTag(value);
+      if (!validation.isValid) {
+        return validation.errorMessage || "Invalid tag format";
+      }
+      return null;
+    },
+  });
+
+  if (!tagName) return;
+
+  const pushTag = await vscode.window.showQuickPick(["Yes", "No"], {
+    placeHolder: `Do you want to push the tag '${tagName}' to remote?`,
+  });
+
+  const commands = [
+    {
+      command: `git tag -a ${tagName} -m "Tagging version ${tagName}"`,
+      description: `Create annotated tag '${tagName}'`,
+      documentationUrl: "https://git-scm.com/docs/git-tag",
+      explanation:
+        "Creates an annotated tag with the specified name and message, marking a specific point in history as important (e.g., a release).",
+    },
+  ];
+
+  if (pushTag === "Yes") {
+    commands.push({
+      command: `git push origin ${tagName}`,
+      description: `Push tag '${tagName}' to remote`,
+      documentationUrl: "https://git-scm.com/docs/git-push",
+      explanation:
+        "Uploads the specified tag to the remote repository, making it available to others.",
+    });
+  }
+
+  await executor.executeCommandSequence(commands, "Create & Push Tag Workflow");
+}
+
+async function executeDeleteTagWorkflow(executor: GitCommandExecutor) {
+  const tags = await executor.getTags();
+
+  if (tags.length === 0) {
+    vscode.window.showInformationMessage("No tags found");
+    return;
+  }
+
+  const selectedTag = await vscode.window.showQuickPick(tags, {
+    placeHolder: "Select a tag to delete",
+  });
+
+  if (!selectedTag) return;
+
+  const deleteRemote = await vscode.window.showQuickPick(["Yes", "No"], {
+    placeHolder: `Do you want to delete the tag '${selectedTag}' from remote as well?`,
+  });
+
+  const commands = [
+    {
+      command: `git tag -d ${selectedTag}`,
+      description: `Delete local tag '${selectedTag}'`,
+      documentationUrl: "https://git-scm.com/docs/git-tag",
+      explanation:
+        "Deletes the specified tag from your local repository. This does not affect the remote repository.",
+    },
+  ];
+
+  if (deleteRemote === "Yes") {
+    commands.push({
+      command: `git push origin --delete ${selectedTag}`,
+      description: `Delete remote tag '${selectedTag}'`,
+      documentationUrl: "https://git-scm.com/docs/git-push",
+      explanation:
+        "Deletes the specified tag from the remote repository, making it unavailable to others.",
+    });
+  }
+
+  await executor.executeCommandSequence(commands, "Delete Tag Workflow");
+}
+
+export {
+  executeFeatureBranchWorkflow,
+  executeHotfixWorkflow,
+  executeReleaseWorkflow,
+  executeCommitPushWorkflow,
+  executePullRebaseWorkflow,
+  executeStashWorkflow,
+  executeMergeWorkflow,
+  executeUndoWorkflow,
+  executeCherryPickWorkflow,
+  executeRevertWorkflow,
+  executeInteractiveRebaseWorkflow,
+  executeCreateSwitchBranchWorkflow,
+  executeSyncFromBranchWorkflow,
+  executeSwitchBranchWorkflow,
+  executeInitializeRepositoryWorkflow,
+  executeCloneRepositoryWorkflow,
+  executeUpdateRemoteUrlWorkflow,
+  executeAmmedLastCommitWorkflow,
+  executeApplyStashWorkflow,
+  executePopStashWorkflow,
+  executeCreateAndPushTagWorkflow,
+  executeDeleteTagWorkflow,
+};

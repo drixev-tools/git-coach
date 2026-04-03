@@ -1,6 +1,8 @@
 {
+    "app": {
+        "name": "Git Workflow Assistant"
+    },
     "messages": {
-        "learnMore": "Saber más",
         "initializeRepository": "Inicializar repositorio Git",
         "cannotExecuteWorkflow": "No se puede ejecutar el flujo de trabajo: {{errorMessage}}",
         "noGitInstalled": "Git no está instalado o no se encontró en el PATH.",
@@ -88,6 +90,7 @@
         }
     },
     "showTipDetails": {
+        "tipsDisabled": "Los consejos están actualmente deshabilitados. Habilítalos en la configuración para ver los detalles.",
         "documentation": "Documentación"
     }
 }

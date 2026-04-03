@@ -1,6 +1,8 @@
 {
+    "app":{
+        "name": "Git Workflow Assistant"
+    },
     "messages": {
-        "learnMore": "Learn more",
         "initializeRepository": "Initialize Git Repository",
         "cannotExecuteWorkflow": "Cannot execute workflow: {{errorMessage}}",
         "noGitInstalled": "Git is not installed or not found in PATH.",
@@ -88,6 +90,7 @@
         }
     },
     "showTipDetails": {
+        "tipsDisabled":"Tips are currently disabled. Enable them in settings to view details.",
         "documentation": "Documentation"
     }
 }

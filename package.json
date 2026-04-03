@@ -1,9 +1,13 @@
 {
   "name": "git-workflow-assistant",
-  "displayName": "Git Workflow Assistant",
+  "displayName": "%appName%",
   "description": "Transparent Git workflows with visible command suggestions",
   "version": "1.0.0",
   "publisher": "drixev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/drixev/git-workflow-vs-extension"
+  },
   "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.80.0"
@@ -35,20 +39,12 @@
         "title": "%contributes.commands.release.title%"
       },
       {
-        "command": "gitWorkflow.commit",
-        "title": "%contributes.commands.commit.title%"
-      },
-      {
         "command": "gitWorkflow.commitAndPush",
         "title": "%contributes.commands.commitAndPush.title%"
       },
       {
         "command": "gitWorkflow.pullRebase",
         "title": "%contributes.commands.pullRebase.title%"
-      },
-      {
-        "command": "gitWorkflow.stashOnly",
-        "title": "%contributes.commands.stashOnly.title%"
       },
       {
         "command": "gitWorkflow.stashAndSwitch",
@@ -93,13 +89,45 @@
       {
         "command": "gitWorkflow.showDocumentation",
         "title": "%contributes.commands.showDocumentation.title%"
+      },
+      {
+        "command": "gitWorkflow.init",
+        "title": "%contributes.commands.init.title%"
+      },
+      {
+        "command": "gitWorkflow.clone",
+        "title": "%contributes.commands.clone.title%"
+      },
+      {
+        "command": "gitWorkflow.updateRemote",
+        "title": "%contributes.commands.updateRemote.title%"
+      },
+      {
+        "command": "gitWorkflow.amendLastCommit",
+        "title": "%contributes.commands.amendLastCommit.title%"
+      },
+      {
+        "command": "gitWorkflow.applyStash",
+        "title": "%contributes.commands.applyStash.title%"
+      },
+      {
+        "command": "gitWorkflow.popStash",
+        "title": "%contributes.commands.popStash.title%"
+      },
+      {
+        "command": "gitWorkflow.createAndPushTag",
+        "title": "%contributes.commands.createAndPushTag.title%"
+      },
+      {
+        "command": "gitWorkflow.deleteTag",
+        "title": "%contributes.commands.deleteTag.title%"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
           "id": "git-workflow-assistant",
-          "title": "Git Workflows",
+          "title": "%appName%",
           "icon": "images/icon.svg"
         }
       ]
@@ -124,7 +152,7 @@
       ]
     },
     "configuration": {
-      "title": "%configuration.title%",
+      "title": "%appName%",
       "properties": {
         "gitWorkflow.autoShowCommands": {
           "type": "boolean",
@@ -145,16 +173,6 @@
           "type": "boolean",
           "default": true,
           "description": "%configuration.showTips%"
-        },
-        "gitWorkflow.validateInputs": {
-          "type": "boolean",
-          "default": true,
-          "description": "%configuration.validateInputs%"
-        },
-        "gitWorkflow.warnDestructiveOperations": {
-          "type": "boolean",
-          "default": true,
-          "description": "%configuration.warnDestructiveOperations%"
         },
         "gitWorkflow.gitDocumentationBaseUrl": {
           "type": "string",
@@ -197,8 +215,8 @@
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
-    "package": "vsce package --allow-missing-repository",
-    "publish": "vsce publish"
+    "package": "npm run vscode:prepublish && vsce package --allow-missing-repository",
+    "publish": "npm run vscode:prepublish && vsce publish"
   },
   "devDependencies": {
     "@types/node": "^20.19.33",
