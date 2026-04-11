@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { GitCommand } from "../gitCommandExecutor";
+import { GitCommand } from "../commands/gitExecutor";
 import { HistoryItem } from "../items/history.item";
 import i18next from "i18next";
 

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { GitCommandExecutor } from "./gitCommandExecutor";
-import { GitValidator } from "./utils/gitValidator";
+import { GitCommandExecutor } from "../commands/gitExecutor";
+import { GitValidator } from "../utils/gitValidator";
 import i18next from "i18next";
 
 async function executeFeatureBranchWorkflow(executor: GitCommandExecutor) {
@@ -87,20 +87,34 @@ async function executeHotfixWorkflow(executor: GitCommandExecutor) {
     await vscode.window.showWarningMessage(versionValidation.errorMessage);
   }
 
+  const baseBranch = await vscode.window.showInputBox({
+    prompt: "Base branch (leave empty for main branch)",
+    placeHolder: "e.g., main",
+    validateInput: (value) => {
+      if (!value || value.trim().length === 0) {
+        return null;
+      }
+      const validation = GitValidator.validateBranchName(value);
+      return validation.isValid
+        ? null
+        : validation.errorMessage || "Invalid branch name";
+    },
+  });
+
+  const branch = baseBranch || "main";
+
   const commands = [
     {
-      command: "git checkout main",
-      description: "Switch to main/production branch",
+      command: `git checkout ${branch}`,
+      description: `Switch to ${branch} branch`,
       documentationUrl: "https://git-scm.com/docs/git-checkout",
-      explanation:
-        "Switches to the main branch, which typically represents production code.",
+      explanation: `Switches to the ${branch} branch, which typically represents production code.`,
     },
     {
-      command: "git pull origin main",
+      command: `git pull origin ${branch}`,
       description: "Get latest production code",
       documentationUrl: "https://git-scm.com/docs/git-pull",
-      explanation:
-        "Fetches and merges the latest changes from the remote main branch.",
+      explanation: `Fetches and merges the latest changes from the remote ${branch} branch.`,
     },
     {
       command: `git checkout -b hotfix/${version}`,
@@ -136,20 +150,34 @@ async function executeReleaseWorkflow(executor: GitCommandExecutor) {
     await vscode.window.showWarningMessage(versionValidation.errorMessage);
   }
 
+  const baseBranch = await vscode.window.showInputBox({
+    prompt: "Base branch (leave empty for develop branch)",
+    placeHolder: "e.g., develop",
+    validateInput: (value) => {
+      if (!value || value.trim().length === 0) {
+        return null;
+      }
+      const validation = GitValidator.validateBranchName(value);
+      return validation.isValid
+        ? null
+        : validation.errorMessage || "Invalid branch name";
+    },
+  });
+
+  const branch = baseBranch || "develop";
+
   const commands = [
     {
-      command: "git checkout develop",
-      description: "Switch to develop branch",
+      command: `git checkout ${branch}`,
+      description: `Switch to ${branch} branch`,
       documentationUrl: "https://git-scm.com/docs/git-checkout",
-      explanation:
-        "Switches to the develop branch, which typically contains integration code.",
+      explanation: `Switches to the ${branch} branch, which typically contains integration code.`,
     },
     {
-      command: "git pull origin develop",
-      description: "Update develop with latest changes",
+      command: `git pull origin ${branch}`,
+      description: `Update ${branch} with latest changes`,
       documentationUrl: "https://git-scm.com/docs/git-pull",
-      explanation:
-        "Fetches and merges the latest changes from the remote develop branch.",
+      explanation: `Fetches and merges the latest changes from the remote ${branch} branch.`,
     },
     {
       command: `git checkout -b release/${version}`,
@@ -500,7 +528,7 @@ async function executeRevertWorkflow(executor: GitCommandExecutor) {
       return {
         label: hash,
         description: message,
-        detail: line,
+        detail: "",
         hash: hash,
       };
     });
@@ -600,7 +628,11 @@ async function executeInteractiveRebaseWorkflow(executor: GitCommandExecutor) {
 
   if (proceed !== "Continue") return;
 
-  await executor.executeCommandSequence([command], "Interactive Rebase Workflow", "interactiveRebase");
+  await executor.executeCommandSequence(
+    [command],
+    "Interactive Rebase Workflow",
+    "interactiveRebase",
+  );
 }
 
 async function executeCreateSwitchBranchWorkflow(executor: GitCommandExecutor) {
@@ -733,26 +765,46 @@ async function executeSwitchBranchWorkflow(executor: GitCommandExecutor) {
 async function executeInitializeRepositoryWorkflow(
   executor: GitCommandExecutor,
 ) {
-  const folderUri = await vscode.window.showOpenDialog({
-    canSelectFolders: true,
-    canSelectFiles: false,
-    canSelectMany: false,
-    openLabel: "Select folder to initialize Git repository in",
-  });
+  let path: string = "";
 
-  if (!folderUri || folderUri.length === 0) {
+  const currentFolder = vscode.workspace.workspaceFolders?.[0];
+
+  if (!currentFolder?.uri.path) {
     vscode.window.showErrorMessage("No folder selected");
     return;
   }
 
-  if (!folderUri[0]?.fsPath) {
-    vscode.window.showErrorMessage("Invalid folder selected");
-    return;
+  path = currentFolder.uri.fsPath;
+
+  const confirm = await vscode.window.showQuickPick(["Yes", "No"], {
+    placeHolder:
+      "Initialize a new Git repository in the current workspace folder?",
+  });
+
+  if (confirm !== "Yes") {
+    const folderUri = await vscode.window.showOpenDialog({
+      canSelectFolders: true,
+      canSelectFiles: false,
+      canSelectMany: false,
+      openLabel: "Select folder to initialize Git repository in",
+    });
+
+    if (!folderUri || folderUri.length === 0) {
+      vscode.window.showErrorMessage("No folder selected");
+      return;
+    }
+
+    if (!folderUri[0]?.fsPath) {
+      vscode.window.showErrorMessage("Invalid folder selected");
+      return;
+    }
+
+    path = folderUri[0].fsPath;
   }
 
   const commands = [
     {
-      command: `git init "${folderUri[0].fsPath}"`,
+      command: `git init "${path}"`,
       description: "Initialize new Git repository",
       documentationUrl: "https://git-scm.com/docs/git-init",
       explanation:
@@ -813,28 +865,62 @@ async function executeCloneRepositoryWorkflow(executor: GitCommandExecutor) {
 }
 
 async function executeUpdateRemoteUrlWorkflow(executor: GitCommandExecutor) {
+  let action: "insert" | "update" = "update";
+
   const currentRemote = await executor.getCurrentRemote();
 
   let remoteName: string = "origin";
 
+  // 1. if no remote exists, prompt to add onw
   if (!currentRemote) {
+    action = "insert";
     vscode.window.showErrorMessage(
       "No remote repository found. Please add a remote before updating the URL.",
     );
 
     const remoteNameInput = await vscode.window.showInputBox({
       prompt: "Enter remote name to add",
-      placeHolder: "e.g., origin",
-      validateInput: (value) => {
-        if (!value || value.trim().length === 0) {
-          return "Remote name is required";
-        }
-        return null;
-      },
+      placeHolder: "Optional (origin is used as default)",
     });
 
-    if (!remoteNameInput) return;
-    remoteName = remoteNameInput;
+    remoteName = remoteNameInput?.trim() || remoteName;
+  }
+
+  // 2. if remote exists, show the list of remotes and allow user to select one to update or add a new one
+  const ADD_NEW = "$(add) Enter a new remote...";
+
+  const allRemotes = currentRemote
+    .split("\n")
+    .filter((line) => line.trim().length > 0);
+
+  if (allRemotes.length > 0) {
+    const remoteSelected = await vscode.window.showQuickPick(
+      [...allRemotes, ADD_NEW],
+      {
+        placeHolder:
+          "Existing remotes (you can update one of these or add a new one)",
+        matchOnDescription: true,
+      },
+    );
+
+    if (remoteSelected === ADD_NEW || !remoteSelected) {
+      action = "insert";
+      const newRemoteName = await vscode.window.showInputBox({
+        prompt: "Enter new remote name",
+        placeHolder: "e.g., origin, upstream",
+        validateInput: (value) => {
+          if (!value || value.trim().length === 0) {
+            return "Remote name is required";
+          }
+          return null;
+        },
+      });
+
+      remoteName = newRemoteName?.trim() || remoteName;
+    } else {
+      action = "update";
+      remoteName = remoteSelected;
+    }
   }
 
   const remoteUrl = await vscode.window.showInputBox({
@@ -851,7 +937,7 @@ async function executeUpdateRemoteUrlWorkflow(executor: GitCommandExecutor) {
 
   const commands = [];
 
-  if (!currentRemote) {
+  if (action === "insert") {
     commands.push({
       command: `git remote add ${remoteName} "${remoteUrl}"`,
       description: `Add new remote '${remoteName}' with URL`,
@@ -860,7 +946,7 @@ async function executeUpdateRemoteUrlWorkflow(executor: GitCommandExecutor) {
     });
   } else {
     commands.push({
-      command: `git remote set-url origin "${remoteUrl}"`,
+      command: `git remote set-url ${remoteName} "${remoteUrl}"`,
       description: "Update remote URL",
       documentationUrl: "https://git-scm.com/docs/git-remote",
       explanation:

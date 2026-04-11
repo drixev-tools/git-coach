@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { exec } from "child_process";
 import { promisify } from "util";
-import { ErrorHelper } from "./utils/errorHelper";
+import { ErrorHelper } from "../utils/errorHelper";
 import i18next from "i18next";
 
 const execAsync = promisify(exec);
@@ -30,40 +30,36 @@ export class GitCommandExecutor {
     workflowCommand?: string,
   ) {
     const config = vscode.workspace.getConfiguration("gitWorkflow");
-    const autoShow = config.get<boolean>("autoShowCommands", true);
     const confirmBefore = config.get<boolean>("confirmBeforeExecute", true);
 
-    if (autoShow) {
+    if (confirmBefore) {
       const preview = this.generateCommandPreview(commands, workflowName);
+      const proceed = await vscode.window.showInformationMessage(
+        `Execute ${workflowName}?`,
+        {
+          modal: true,
+          detail: preview,
+        },
+        "Execute",
+        "Show Details",
+        "Cancel",
+      );
 
-      if (confirmBefore) {
-        const proceed = await vscode.window.showInformationMessage(
-          `Execute ${workflowName}?`,
-          {
-            modal: true,
-            detail: preview,
-          },
+      if (proceed === "Show Details") {
+        this.outputChannel.clear();
+        this.outputChannel.appendLine(`=== ${workflowName} ===\n`);
+        this.outputChannel.appendLine(preview);
+        this.outputChannel.show();
+
+        const confirm = await vscode.window.showInformationMessage(
+          "Ready to execute?",
           "Execute",
-          "Show Details",
           "Cancel",
         );
 
-        if (proceed === "Show Details") {
-          this.outputChannel.clear();
-          this.outputChannel.appendLine(`=== ${workflowName} ===\n`);
-          this.outputChannel.appendLine(preview);
-          this.outputChannel.show();
-
-          const confirm = await vscode.window.showInformationMessage(
-            "Ready to execute?",
-            "Execute",
-            "Cancel",
-          );
-
-          if (confirm !== "Execute") return;
-        } else if (proceed !== "Execute") {
-          return;
-        }
+        if (confirm !== "Execute") return;
+      } else if (proceed !== "Execute") {
+        return;
       }
     }
 
@@ -372,7 +368,7 @@ export class GitCommandExecutor {
     }
 
     try {
-      const { stdout } = await execAsync("git config --get remote.origin.url", {
+      const { stdout } = await execAsync("git remote", {
         cwd: workspaceFolder.uri.fsPath,
       });
       return stdout.trim();
