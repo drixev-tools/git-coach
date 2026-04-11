@@ -2,7 +2,7 @@
   "name": "git-coach",
   "displayName": "%displayName%",
   "description": "Transparent Git workflows with visible command suggestions",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "drixev",
   "repository": {
     "type": "git",
@@ -154,11 +154,6 @@
     "configuration": {
       "title": "%displayName%",
       "properties": {
-        "gitWorkflow.autoShowCommands": {
-          "type": "boolean",
-          "default": true,
-          "description": "%configuration.autoShowCommands%"
-        },
         "gitWorkflow.confirmBeforeExecute": {
           "type": "boolean",
           "default": true,

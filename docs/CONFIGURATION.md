@@ -9,7 +9,6 @@ config.get<boolean>('autoShowCommands', true);
 
 | Setting key | Type | Default | Read in |
 |---|---|---|---|
-| `autoShowCommands` | boolean | `true` | `GitCommandExecutor` |
 | `confirmBeforeExecute` | boolean | `true` | `GitCommandExecutor` |
 | `saveCommandHistory` | boolean | `true` | `GitCommandExecutor` |
 | `showTips` | boolean | `true` | `extension.ts` |

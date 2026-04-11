@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { GitCommand } from "../gitCommandExecutor";
+import { GitCommand } from "../commands/gitExecutor";
 
 export class HistoryItem extends vscode.TreeItem {
   public readonly gitCommand: GitCommand;
