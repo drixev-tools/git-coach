@@ -101,4 +101,4 @@ git rebase branch-name
 git merge branch-name
 ```
 
-Remember: These workflows are guides, not rules. Adapt them to your team's needs!
+Remember: These workflows are guides, NOT RULES. Adapt them to your team's needs!

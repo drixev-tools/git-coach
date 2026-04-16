@@ -138,21 +138,9 @@ npm update
 ```bash
 npm install -g @vscode/vsce
 ```
-
-#### Issue: Extension Host doesn't start
-**Solution:**
-1. Close all VS Code windows
-2. Delete `.vscode-test` folder
-3. Run extension again (F5)
-
 #### Extension doesn't activate
 - Make sure you have Git installed
 - Open a folder with a Git repository
-
-#### Commands fail
-- Check Git is in your PATH
-- Verify you're in a Git repository
-- Review error messages in Output channel
 
 #### Command history not saving
 - Check `gitWorkflow.saveCommandHistory` setting

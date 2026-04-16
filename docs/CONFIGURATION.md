@@ -15,8 +15,3 @@ config.get<boolean>('autoShowCommands', true);
 | `gitDocumentationBaseUrl` | string | `https://git-scm.com/docs` | `extension.ts` |
 
 ---
-
-### Version Numbering (Semantic Versioning)
-- **Major (1.0.0)**: Breaking changes
-- **Minor (0.1.0)**: New features (backward compatible)
-- **Patch (0.0.1)**: Bug fixes
