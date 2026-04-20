@@ -24,6 +24,8 @@
     "contributes.commands.popStash.title":"glc: Sacar Stash",
     "contributes.commands.createAndPushTag.title":"glc: Crear y Enviar Etiqueta",
     "contributes.commands.deleteTag.title":"glc: Eliminar Etiqueta",
+    "contributes.commands.explainCommand.title":"glc: Explicar Comando",
+    "contributes.commands.clearHistory.title":"glc: Limpiar Historial",
     "views.gitWorkflowExplorer": "Flujos de trabajos comunes",
     "views.gitCommandHistory": "Historial de comandos",
     "views.gitTipsExplorer": "Consejos de Git",

@@ -25,6 +25,8 @@
     "contributes.commands.popStash.title": "glc: Pop Stash",
     "contributes.commands.createAndPushTag.title": "glc: Create & Push Tag",
     "contributes.commands.deleteTag.title": "glc: Delete Tag",
+    "contributes.commands.explainCommand.title": "glc: Explain Command",
+    "contributes.commands.clearHistory.title": "glc: Clear History",
     "views.gitWorkflowExplorer": "Common Workflows",
     "views.gitCommandHistory": "Command History",
     "views.gitTipsExplorer": "Git Tips",

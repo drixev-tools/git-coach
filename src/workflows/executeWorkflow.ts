@@ -20,7 +20,7 @@ import {
   executeInitializeRepositoryWorkflow,
   executeCloneRepositoryWorkflow,
   executeUpdateRemoteUrlWorkflow,
-  executeAmmedLastCommitWorkflow,
+  executeAmendLastCommitWorkflow,
   executeApplyStashWorkflow,
   executePopStashWorkflow,
   executeCreateAndPushTagWorkflow,
@@ -128,7 +128,7 @@ export default async function executeWorkflow(
       await executeUpdateRemoteUrlWorkflow(executor);
       break;
     case "amendLastCommit":
-      await executeAmmedLastCommitWorkflow(executor);
+      await executeAmendLastCommitWorkflow(executor);
       break;
     case "applyStash":
       await executeApplyStashWorkflow(executor);

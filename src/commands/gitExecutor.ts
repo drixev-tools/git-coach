@@ -210,16 +210,16 @@ export class GitCommandExecutor {
 
     if (!saveHistory) return;
 
-    this.commandHistory.unshift({
+    const history = this.context.globalState.get<GitCommand[]>("commandHistory", []);
+
+    history.unshift({
       ...command,
       description: `${command.description} (${new Date().toLocaleString()})`,
     });
 
-    if (this.commandHistory.length > 50) {
-      this.commandHistory = this.commandHistory.slice(0, 50);
-    }
-
-    this.context.globalState.update("commandHistory", this.commandHistory);
+    const trimmed = history.slice(0, 50);
+    this.commandHistory = trimmed;
+    this.context.globalState.update("commandHistory", trimmed);
     vscode.commands.executeCommand("gitWorkflow.refreshHistory");
   }
 

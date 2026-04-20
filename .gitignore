@@ -28,3 +28,6 @@ npm-debug.log*
 # claude
 .claude/
 .vscode/
+
+docs/VSCODE_ICONS.md
+docs/DEVELOPMENT.md
