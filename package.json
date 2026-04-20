@@ -88,7 +88,8 @@
       },
       {
         "command": "gitWorkflow.showDocumentation",
-        "title": "%contributes.commands.showDocumentation.title%"
+        "title": "%contributes.commands.showDocumentation.title%",
+        "icon": "$(info)"
       },
       {
         "command": "gitWorkflow.init",
@@ -121,6 +122,16 @@
       {
         "command": "gitWorkflow.deleteTag",
         "title": "%contributes.commands.deleteTag.title%"
+      },
+      {
+        "command": "gitWorkflow.explainCommand",
+        "title": "%contributes.commands.explainCommand.title%",
+        "icon": "$(question)"
+      },
+      {
+        "command": "gitWorkflow.clearHistory",
+        "title": "%contributes.commands.clearHistory.title%",
+        "icon": "$(clear-all)"
       }
     ],
     "viewsContainers": {
@@ -181,6 +192,11 @@
         {
           "command": "gitWorkflow.showWorkflows",
           "when": "view == gitWorkflowExplorer",
+          "group": "navigation"
+        },
+        {
+          "command": "gitWorkflow.clearHistory",
+          "when": "view == gitCommandHistory",
           "group": "navigation"
         }
       ],

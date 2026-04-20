@@ -960,7 +960,7 @@ async function executeUpdateRemoteUrlWorkflow(executor: GitCommandExecutor) {
   );
 }
 
-async function executeAmmedLastCommitWorkflow(executor: GitCommandExecutor) {
+async function executeAmendLastCommitWorkflow(executor: GitCommandExecutor) {
   const lastCommit = await executor.getCommits(1);
 
   if (!lastCommit.length) {
@@ -1175,7 +1175,7 @@ export {
   executeInitializeRepositoryWorkflow,
   executeCloneRepositoryWorkflow,
   executeUpdateRemoteUrlWorkflow,
-  executeAmmedLastCommitWorkflow,
+  executeAmendLastCommitWorkflow,
   executeApplyStashWorkflow,
   executePopStashWorkflow,
   executeCreateAndPushTagWorkflow,
