@@ -46,8 +46,8 @@ Complete guide for installing the Git Coach assistant extension.
 
 #### Step 1: Clone Repository
 ```bash
-git clone https://github.com/yourusername/git-workflow-assistant.git
-cd git-workflow-assistant
+git clone https://github.com/drixev-tools/git-coach
+cd git-coach
 ```
 
 #### Step 2: Install Dependencies

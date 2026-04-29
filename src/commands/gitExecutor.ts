@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 import { exec } from "child_process";
 import { promisify } from "util";
 import { ErrorHelper } from "../utils/errorHelper";
-import i18next from "i18next";
 
 const execAsync = promisify(exec);
 
@@ -125,23 +124,29 @@ export class GitCommandExecutor {
         }
 
         this.addToHistory(cmd);
-      } catch (error: any) {
+      } catch (error: unknown) {
         const errorInfo = ErrorHelper.parseGitError(error);
         const formattedError = ErrorHelper.formatErrorForDisplay(errorInfo);
 
         this.outputChannel.appendLine(`❌ Error: ${errorInfo.message}`);
         this.outputChannel.appendLine(formattedError);
 
-        if (error.message) {
-          this.outputChannel.appendLine(
-            `\n📋 Original Error: ${error.message}`,
-          );
-        }
-        if (error.stdout) {
-          this.outputChannel.appendLine(`Output: ${error.stdout}`);
-        }
-        if (error.stderr) {
-          this.outputChannel.appendLine(`Error Details: ${error.stderr}`);
+        if (error && typeof error === "object") {
+          const o = error as Record<string, unknown>;
+          const message = o.message;
+          if (typeof message === "string" && message) {
+            this.outputChannel.appendLine(
+              `\n📋 Original Error: ${message}`,
+            );
+          }
+          const stdout = o.stdout;
+          if (typeof stdout === "string" && stdout) {
+            this.outputChannel.appendLine(`Output: ${stdout}`);
+          }
+          const stderr = o.stderr;
+          if (typeof stderr === "string" && stderr) {
+            this.outputChannel.appendLine(`Error Details: ${stderr}`);
+          }
         }
 
         success = false;
@@ -238,7 +243,7 @@ export class GitCommandExecutor {
         cwd: workspaceFolder.uri.fsPath,
       });
       return stdout.trim();
-    } catch (error) {
+    } catch {
       throw new Error("Failed to get current branch");
     }
   }
@@ -259,8 +264,8 @@ export class GitCommandExecutor {
       return stdout
         .trim()
         .split("\n")
-        .filter((b: string | any[]) => b.length > 0);
-    } catch (error) {
+        .filter((b: string) => b.length > 0);
+    } catch {
       throw new Error("Failed to get branches");
     }
   }
@@ -283,7 +288,7 @@ export class GitCommandExecutor {
         .split("\n")
         .filter((b: string) => b.length > 0 && !b.includes("HEAD"))
         .map((b: string) => b.trim());
-    } catch (error) {
+    } catch {
       throw new Error("Failed to get remote branches");
     }
   }
@@ -314,7 +319,7 @@ export class GitCommandExecutor {
           };
         })
         .filter((c) => c.hash.length > 0);
-    } catch (error) {
+    } catch {
       throw new Error("Failed to get commits");
     }
   }
@@ -356,7 +361,7 @@ export class GitCommandExecutor {
         }
         return { id: line, message: line };
       });
-    } catch (error) {
+    } catch {
       throw new Error("Failed to get stash list");
     }
   }
@@ -372,7 +377,7 @@ export class GitCommandExecutor {
         cwd: workspaceFolder.uri.fsPath,
       });
       return stdout.trim();
-    } catch (error) {
+    } catch {
       throw new Error("Failed to get current remote");
     }
   }
@@ -394,7 +399,7 @@ export class GitCommandExecutor {
         .trim()
         .split("\n")
         .filter((t: string) => t.length > 0);
-    } catch (error) {
+    } catch {
       throw new Error("Failed to get tags");
     }
   }

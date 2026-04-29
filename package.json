@@ -2,11 +2,11 @@
   "name": "git-coach",
   "displayName": "%displayName%",
   "description": "Transparent Git workflows with visible command suggestions",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "drixev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/drixev-tools/git-workflow-vs-extension"
+    "url": "https://github.com/drixev-tools/git-coach"
   },
   "icon": "images/icon.png",
   "engines": {
@@ -137,14 +137,14 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "git-workflow-assistant",
+          "id": "git-coach",
           "title": "%displayName%",
           "icon": "images/icon.svg"
         }
       ]
     },
     "views": {
-      "git-workflow-assistant": [
+      "git-coach": [
         {
           "id": "gitWorkflowExplorer",
           "name": "%views.gitWorkflowExplorer%",
@@ -224,18 +224,20 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
+    "lint": "eslint src",
     "test": "node ./out/test/runTest.js",
     "package": "npm run vscode:prepublish && vsce package --allow-missing-repository",
     "publish": "npm run vscode:prepublish && vsce publish"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/node": "^20.19.33",
     "@types/vscode": "^1.80.0",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
-    "eslint": "^8.0.0",
-    "typescript": "^5.0.0"
+    "eslint": "^10.0.0",
+    "globals": "^17.5.0",
+    "jiti": "^2.4.2",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.59.1"
   },
   "dependencies": {
     "i18next": "^23.16.8"

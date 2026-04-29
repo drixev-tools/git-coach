@@ -1,4 +1,3 @@
-import * as vscode from 'vscode';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
@@ -14,7 +13,7 @@ export class GitValidator {
         try {
             await execAsync('git --version');
             return true;
-        } catch (error) {
+        } catch {
             throw new Error(
                 'Git is not installed or not available in PATH. ' +
                 'Please install Git from https://git-scm.com/downloads and ensure it is added to your system PATH.'
@@ -28,7 +27,7 @@ export class GitValidator {
                 cwd: workspacePath
             });
             return true;
-        } catch (error) {
+        } catch {
             throw new Error(
                 'The current workspace is not a Git repository. ' +
                 'Please initialize a Git repository first using "git init" or open a folder that contains a Git repository.'
@@ -68,7 +67,7 @@ export class GitValidator {
             };
         }
 
-        const validBranchNameRegex = /^[a-zA-Z0-9._\/-]+$/;
+        const validBranchNameRegex = /^[a-zA-Z0-9._/-]+$/;
         if (!validBranchNameRegex.test(trimmedName)) {
             return {
                 isValid: false,
@@ -132,7 +131,7 @@ export class GitValidator {
             ? trimmedVersion.substring(1) 
             : trimmedVersion;
 
-        const semverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([\da-z\-]+(?:\.[\da-z\-]+)*))?(?:\+([\da-z\-]+(?:\.[\da-z\-]+)*))?$/i;
+        const semverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-([\da-z-]+(?:\.[\da-z-]+)*))?(?:\+([\da-z-]+(?:\.[\da-z-]+)*))?$/i;
         
         if (!semverRegex.test(versionToCheck)) {
             return {
