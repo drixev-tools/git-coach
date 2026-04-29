@@ -34,9 +34,10 @@ export async function activate(context: vscode.ExtensionContext) {
   );
   try {
     await GitValidator.checkGitInstalled();
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     vscode.window
-      .showWarningMessage(`Git Coach: ${error.message}`, "Learn more")
+      .showWarningMessage(`Git Coach: ${errorMessage}`, "Learn more")
       .then((selection) => {
         if (selection === "Learn more") {
           vscode.env.openExternal(
@@ -208,7 +209,7 @@ export async function activate(context: vscode.ExtensionContext) {
       command: "gitWorkflow.showTips",
       callback: () => {
         vscode.commands.executeCommand(
-          "git-workflow-assistant.gitTipsExplorer.focus",
+          "git-coach.gitTipsExplorer.focus",
         );
       },
     },
@@ -312,7 +313,10 @@ export async function activate(context: vscode.ExtensionContext) {
   const menuSubscriptions: ViewCommandSubscription[] = [
     {
       command: "gitWorkflow.showTipDetails",
-      callback: (item: TipItem) => {
+      callback: (item: unknown) => {
+        if (!(item instanceof TipItem)) {
+          return;
+        }
         const config = vscode.workspace.getConfiguration("gitWorkflow");
         const showTips = config.get<boolean>("showTips", true);
         if (!showTips) {
@@ -341,7 +345,10 @@ export async function activate(context: vscode.ExtensionContext) {
     },
     {
       command: "gitWorkflow.showDocumentation",
-      callback: (item: WorkflowItem) => {
+      callback: (item: unknown) => {
+        if (!(item instanceof WorkflowItem)) {
+          return;
+        }
         const config = vscode.workspace.getConfiguration("gitWorkflow");
         const baseUrl = config.get<string>(
           "gitDocumentationBaseUrl",
@@ -372,7 +379,10 @@ export async function activate(context: vscode.ExtensionContext) {
     },
     {
       command: "gitWorkflow.executeWorkflow",
-      callback: (item: WorkflowItem) => {
+      callback: (item: unknown) => {
+        if (!(item instanceof WorkflowItem)) {
+          return;
+        }
         executeWorkflow(item.workflowType, commandExecutor);
       },
     },

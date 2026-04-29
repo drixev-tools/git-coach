@@ -1,7 +1,10 @@
+import { exec } from "child_process";
+import { promisify } from "util";
 import * as vscode from "vscode";
 import { GitCommandExecutor } from "../commands/gitExecutor";
 import { GitValidator } from "../utils/gitValidator";
-import i18next from "i18next";
+
+const execAsync = promisify(exec);
 
 async function executeFeatureBranchWorkflow(executor: GitCommandExecutor) {
   const branchName = await vscode.window.showInputBox({
@@ -427,10 +430,6 @@ async function executeCherryPickWorkflow(executor: GitCommandExecutor) {
   }
 
   try {
-    const { exec } = require("child_process");
-    const { promisify } = require("util");
-    const execAsync = promisify(exec);
-
     const { stdout } = await execAsync("git log --oneline -20", {
       cwd: workspaceFolder.uri.fsPath,
     });
@@ -453,18 +452,29 @@ async function executeCherryPickWorkflow(executor: GitCommandExecutor) {
     }
 
     const commitItems: CommitItem[] = commits.map((line: string) => {
-      const [hash, ...messageParts] = line.split(" ");
-      const message = messageParts.join(" ");
+      const firstSpace = line.indexOf(" ");
+      const hash =
+        firstSpace === -1 ? line : line.slice(0, firstSpace);
+      const message =
+        firstSpace === -1 ? "" : line.slice(firstSpace + 1);
+
       return {
         label: hash,
         description: message,
-        detail: line,
-        hash: hash,
+        detail: "",
+        hash,
       };
     });
 
-    const selected = await vscode.window.showQuickPick<CommitItem>(
-      commitItems,
+    const ADD_NEW = {
+      label: "$(add)",
+      description: "Use a custom commit hash",
+      detail: "",
+      hash: "new",
+    };
+
+    const selected = await vscode.window.showQuickPick(
+      [ADD_NEW, ...commitItems],
       {
         placeHolder: "Select a commit to cherry-pick",
         matchOnDescription: true,
@@ -473,10 +483,27 @@ async function executeCherryPickWorkflow(executor: GitCommandExecutor) {
 
     if (!selected) return;
 
+    let customCommit: string | undefined = undefined;
+
+    if (selected.hash === ADD_NEW.hash) {
+      customCommit = await vscode.window.showInputBox({
+        placeHolder: "Enter your hash",
+        validateInput: (value) => {
+          if (!value || value.trim().length === 0 || value.length < 8) {
+            return "Hash is required and must be at least 8 characters long";
+          }
+          return null;
+        },
+      });
+      if (!customCommit) return;
+    }
+
+    const pickedHash = customCommit ?? selected.hash;
+
     const commands = [
       {
-        command: `git cherry-pick ${selected.hash}`,
-        description: `Cherry-pick commit ${selected.hash}: ${selected.description}`,
+        command: `git cherry-pick ${pickedHash}`,
+        description: `Cherry-pick commit ${pickedHash}: ${selected.description}`,
         documentationUrl: "https://git-scm.com/docs/git-cherry-pick",
         explanation:
           "Cherry-pick applies the changes from a specific commit to the current branch without merging the entire branch history.",
@@ -484,8 +511,9 @@ async function executeCherryPickWorkflow(executor: GitCommandExecutor) {
     ];
 
     await executor.executeCommandSequence(commands, "Cherry-Pick Workflow");
-  } catch (error: any) {
-    vscode.window.showErrorMessage(`Failed to get commits: ${error.message}`);
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
+    vscode.window.showErrorMessage(`Failed to get commits: ${msg}`);
   }
 }
 
@@ -497,10 +525,6 @@ async function executeRevertWorkflow(executor: GitCommandExecutor) {
   }
 
   try {
-    const { exec } = require("child_process");
-    const { promisify } = require("util");
-    const execAsync = promisify(exec);
-
     const { stdout } = await execAsync("git log --oneline -20", {
       cwd: workspaceFolder.uri.fsPath,
     });
@@ -523,13 +547,16 @@ async function executeRevertWorkflow(executor: GitCommandExecutor) {
     }
 
     const commitItems: CommitItem[] = commits.map((line: string) => {
-      const [hash, ...messageParts] = line.split(" ");
-      const message = messageParts.join(" ");
+      const firstSpace = line.indexOf(" ");
+      const hash =
+        firstSpace === -1 ? line : line.slice(0, firstSpace);
+      const message =
+        firstSpace === -1 ? "" : line.slice(firstSpace + 1);
       return {
         label: hash,
         description: message,
         detail: "",
-        hash: hash,
+        hash,
       };
     });
 
@@ -554,8 +581,9 @@ async function executeRevertWorkflow(executor: GitCommandExecutor) {
     ];
 
     await executor.executeCommandSequence(commands, "Revert Commit Workflow");
-  } catch (error: any) {
-    vscode.window.showErrorMessage(`Failed to get commits: ${error.message}`);
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
+    vscode.window.showErrorMessage(`Failed to get commits: ${msg}`);
   }
 }
 
@@ -765,8 +793,6 @@ async function executeSwitchBranchWorkflow(executor: GitCommandExecutor) {
 async function executeInitializeRepositoryWorkflow(
   executor: GitCommandExecutor,
 ) {
-  let path: string = "";
-
   const currentFolder = vscode.workspace.workspaceFolders?.[0];
 
   if (!currentFolder?.uri.path) {
@@ -774,14 +800,20 @@ async function executeInitializeRepositoryWorkflow(
     return;
   }
 
-  path = currentFolder.uri.fsPath;
-
   const confirm = await vscode.window.showQuickPick(["Yes", "No"], {
     placeHolder:
       "Initialize a new Git repository in the current workspace folder?",
   });
 
-  if (confirm !== "Yes") {
+  if (confirm === undefined) {
+    return;
+  }
+
+  let path: string;
+
+  if (confirm === "Yes") {
+    path = currentFolder.uri.fsPath;
+  } else {
     const folderUri = await vscode.window.showOpenDialog({
       canSelectFolders: true,
       canSelectFiles: false,

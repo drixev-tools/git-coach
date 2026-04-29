@@ -4,9 +4,24 @@ export interface ErrorInfo {
     errorType: string;
 }
 
+function messageFromUnknown(error: unknown): string {
+    if (typeof error === "string") {
+        return error;
+    }
+    if (typeof error === "object" && error !== null) {
+        const o = error as Record<string, unknown>;
+        const msg = o.message;
+        const stderr = o.stderr;
+        const m = typeof msg === "string" ? msg : "";
+        const e = typeof stderr === "string" ? stderr : "";
+        return m || e || String(error);
+    }
+    return String(error);
+}
+
 export class ErrorHelper {
-    static parseGitError(error: any): ErrorInfo {
-        const errorMessage = typeof error === 'string' ? error : (error.message || error.stderr || String(error));
+    static parseGitError(error: unknown): ErrorInfo {
+        const errorMessage = messageFromUnknown(error);
         const lowerMessage = errorMessage.toLowerCase();
 
         if (lowerMessage.includes('not a git repository') || lowerMessage.includes('not a git repo')) {

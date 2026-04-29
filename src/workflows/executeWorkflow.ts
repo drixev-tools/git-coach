@@ -33,11 +33,12 @@ export default async function executeWorkflow(
 ) {
   try {
     await GitValidator.checkGitInstalled();
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     vscode.window
       .showErrorMessage(
         i18next.t("message.cannotExecuteWorkflow", {
-          errorMessage: error.message,
+          errorMessage,
         }),
         "Learn more",
       )
@@ -61,10 +62,11 @@ export default async function executeWorkflow(
     if (workflowType !== "init") {
       await GitValidator.checkGitRepository(workspaceFolder.uri.fsPath);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     vscode.window
       .showErrorMessage(
-        `Cannot execute workflow: ${error.message}`,
+        `Cannot execute workflow: ${errorMessage}`,
         i18next.t("messages.initializeRepository"),
       )
       .then((selection) => {
