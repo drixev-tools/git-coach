@@ -2,7 +2,7 @@
   "name": "git-coach",
   "displayName": "%displayName%",
   "description": "Transparent Git workflows with visible command suggestions",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "publisher": "drixev",
   "repository": {
     "type": "git",
