@@ -1,0 +1,22 @@
+# Source
+src/**
+test/**
+docs/**
+
+# Dev tooling
+.vscode/**
+.github/**
+.claude/**
+tsconfig.json
+*.vsix
+.gitignore
+package-lock.json
+
+# Dependencies
+node_modules/**
+
+# Build artifacts (maps & declarations don't ship)
+out/**
+dist/**/*.js.map
+dist/**/*.d.ts
+dist/**/*.d.ts.map
