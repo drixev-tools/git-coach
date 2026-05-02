@@ -25,6 +25,7 @@ import {
   executePopStashWorkflow,
   executeCreateAndPushTagWorkflow,
   executeDeleteTagWorkflow,
+  executePullWorkflow,
 } from "./workflows";
 
 export default async function executeWorkflow(
@@ -143,6 +144,9 @@ export default async function executeWorkflow(
       break;
     case "deleteTag":
       await executeDeleteTagWorkflow(executor);
+      break;
+    case "pull":
+      await executePullWorkflow(executor);
       break;
     default:
       vscode.window.showErrorMessage(

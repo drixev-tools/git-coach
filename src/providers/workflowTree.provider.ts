@@ -93,6 +93,12 @@ export class WorkflowTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             "Quickly switching to any branch. Simpler than the feature branch workflow " +
               "when you don't need to update from a base branch first.",
           ),
+          new WorkflowItem(
+            "Pull",
+            "pull",
+            "Pull latest changes from remote",
+            "Fetches and merges the latest changes from the remote repository into the current branch.",
+          ),
         ]),
         new CategoryItem("Committing", [
           new WorkflowItem(

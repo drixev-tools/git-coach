@@ -8,6 +8,7 @@ docs/**
 .github/**
 .claude/**
 tsconfig.json
+esbuild.ts
 *.vsix
 .gitignore
 package-lock.json
@@ -20,3 +21,12 @@ out/**
 dist/**/*.js.map
 dist/**/*.d.ts
 dist/**/*.d.ts.map
+
+# Old tsc sub-bundles replaced by esbuild single bundle
+dist/commands/**
+dist/items/**
+dist/locales/**
+dist/providers/**
+dist/utils/**
+dist/views/**
+dist/workflows/**
