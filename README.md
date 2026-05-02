@@ -116,7 +116,7 @@ This extension is free to install and use. You may not copy, modify, redistribut
 - [Git Documentation](https://git-scm.com/doc)
 - [Pro Git Book](https://git-scm.com/book/en/v2)
 
-## Support
+## Support ❤️
 
 I built this extension to help others and keep it free.
 
