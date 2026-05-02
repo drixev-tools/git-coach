@@ -1189,6 +1189,21 @@ async function executeDeleteTagWorkflow(executor: GitCommandExecutor) {
   await executor.executeCommandSequence(commands, "Delete Tag Workflow");
 }
 
+async function executePullWorkflow(executor: GitCommandExecutor) {
+  const branch = await executor.getCurrentBranch();
+
+  const commands = [
+    {
+      command: `git pull origin ${branch}`,
+      description: `Pull latest changes from origin/${branch}`,
+      documentationUrl: "https://git-scm.com/docs/git-pull",
+      explanation: "Fetches and merges the latest changes from the remote repository into the current branch.",
+    },
+  ];
+
+  await executor.executeCommandSequence(commands, "Pull Workflow");
+}
+
 export {
   executeFeatureBranchWorkflow,
   executeHotfixWorkflow,
@@ -1212,4 +1227,5 @@ export {
   executePopStashWorkflow,
   executeCreateAndPushTagWorkflow,
   executeDeleteTagWorkflow,
+  executePullWorkflow,
 };

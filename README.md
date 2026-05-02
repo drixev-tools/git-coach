@@ -116,12 +116,17 @@ This extension is free to install and use. You may not copy, modify, redistribut
 - [Git Documentation](https://git-scm.com/doc)
 - [Pro Git Book](https://git-scm.com/book/en/v2)
 
-## Show Your Support
+## Support
 
-If you find this extension helpful:
+I built this extension to help others and keep it free.
+
+If it adds value to your workflow, feel free to support it with a small contribution.:
 - Star the repository
 - Share with other developers
 - Submit feedback and suggestions
+- [Buy me a coffe](https://buymeacoffee.com/drixev)
+- [Github Sponsor](https://github.com/sponsors/drixev)
+
 
 ---
 

@@ -26,6 +26,7 @@
     "contributes.commands.deleteTag.title":"glc: Eliminar Etiqueta",
     "contributes.commands.explainCommand.title":"glc: Explicar Comando",
     "contributes.commands.clearHistory.title":"glc: Limpiar Historial",
+    "contributes.commands.pull.title":"glc: Obtener",
     "views.gitWorkflowExplorer": "Flujos de trabajos comunes",
     "views.gitCommandHistory": "Historial de comandos",
     "views.gitTipsExplorer": "Consejos de Git",
